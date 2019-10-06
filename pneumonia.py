@@ -41,6 +41,7 @@ test_data_dir = '../input/chest_xray/chest_xray/test'
 
 nb_train_samples = 5217
 nb_validation_samples = 17
+nb_test_samples=623
 epochs = 20
 batch_size = 16
 
@@ -108,12 +109,25 @@ test_generator = test_datagen.flow_from_directory(
 
 model.fit_generator(
     train_generator,
-    steps_per_epoch=nb_train_samples // batch_size,
+    steps_per_epoch=nb_train_samples // batch_size, #total images 
     epochs=epochs,
     validation_data=validation_generator,
     validation_steps=nb_validation_samples // batch_size)
+#with test 
+model.fit_generator(
+    train_generator,
+    steps_per_epoch=nb_train_samples // batch_size, #total images 
+    epochs=epochs,
+    validation_data=test_generator,
+    validation_steps=nb_test_samples // batch_size)
 
-model.save_weights('first_try.h5')
+model.save('first.h5')
+model.save('using_test.h5')
+#LOADING MODEL
+from keras.models import load_model
+new_model = load_model('using_test.h5')
+new_model.summary()
+
 model.evaluate_generator()
 
 scores = model.evaluate_generator(test_generator,steps=10)
